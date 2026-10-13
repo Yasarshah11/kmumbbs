@@ -1,0 +1,1 @@
+{"name":"medico-tools","private":true,"type":"module","dependencies":{"@napi-rs/canvas":"^1.0.11","pdfjs-dist":"^4.10.38","puppeteer-core":"^25.13.0"}}

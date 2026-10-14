@@ -6,7 +6,7 @@ import { execSync } from 'child_process';
 
 const args = process.argv.slice(2);
 const code = (args.find((a) => !a.startsWith('--')) || '').trim().toUpperCase().replace(/\s+/g, '');
-if (code.length < 6) { console.error('Give a code of at least 6 characters, e.g. node setcode.mjs KMU-HEAL-2027 --push'); process.exit(1); }
+if (code.length < 4) { console.error('Give a code of at least 4 characters, e.g. node setcode.mjs KMU-HEAL-2027 --push'); process.exit(1); }
 fs.writeFileSync('../data/access-code.txt', code + '\n');
 execSync('node build.mjs', { stdio: 'inherit' });
 console.log(`\nAccess code is now: ${code}`);

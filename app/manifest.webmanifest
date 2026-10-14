@@ -1,6 +1,6 @@
 {
-  "name": "Medico Healer",
-  "short_name": "Medico Healer",
+  "name": "NZ",
+  "short_name": "NZ",
   "description": "MBBS study companion: study map, past-paper MCQs, mock exams and OSPE recall.",
   "start_url": "./",
   "scope": "./",

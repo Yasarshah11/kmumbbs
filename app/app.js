@@ -1,4 +1,4 @@
-// Medico Healer — offline-first study app. No framework: hash router + string templates.
+// NZ — offline-first study app. No framework: hash router + string templates.
 
 const $ = (s, el = document) => el.querySelector(s);
 const view = $('#view');
@@ -517,7 +517,7 @@ const A = {
   set(el) { const k = el.dataset.k; S[k] = k === 'goal' || k === 'pace' ? Number(el.dataset.v) : el.dataset.v; save(); applyTheme(); render(true); },
   export() {
     const blob = new Blob([JSON.stringify(S)], { type: 'application/json' });
-    const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: `medico-healer-backup-${ymd()}.json` });
+    const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: `nz-backup-${ymd()}.json` });
     a.click(); URL.revokeObjectURL(a.href); toast('Backup saved to your downloads');
   },
   lock() { localStorage.removeItem(CODE_KEY); location.hash = '#/home'; location.reload(); },
@@ -536,7 +536,7 @@ document.addEventListener('change', (e) => {
     const data = JSON.parse(t);
     if (!data || typeof data !== 'object' || !('q' in data) || !('t' in data)) throw new Error('not a backup');
     S = { ...structuredClone(defaults), ...data }; save(); applyTheme(); render(); toast('Backup restored');
-  }).catch(() => toast('That file is not a Medico Healer backup'));
+  }).catch(() => toast('That file is not an NZ backup'));
 });
 
 // ---------- access code + encrypted data ----------
@@ -554,7 +554,7 @@ async function openBundle(buf, code) {
 }
 function askCode(buf, wrong) {
   tabsEl.hidden = true;
-  view.innerHTML = `<div class="gate"><img src="icons/icon.svg" alt="" width="72" height="72"><h1>Medico Healer</h1><p class="muted">Enter your access code to open the app.</p>
+  view.innerHTML = `<div class="gate"><img src="icons/icon.svg" alt="" width="72" height="72"><h1>NZ</h1><p class="muted">Enter your access code to open the app.</p>
     <form id="gate" class="stack"><input class="input" id="code" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Access code" aria-label="Access code" required>
     ${wrong ? `<p class="small" style="color:var(--bad)">${wrong}</p>` : ''}<button class="btn">Unlock</button></form></div>`;
   $('#gate').addEventListener('submit', async (e) => {

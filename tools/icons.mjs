@@ -1,4 +1,4 @@
-// Draw the app icon (a pulse line through a rounded tile) as SVG + PNGs.
+// Draw the app icon (an NZ monogram on a rounded tile) as SVG + PNGs.
 import fs from 'fs';
 import { createCanvas } from '@napi-rs/canvas';
 
@@ -16,13 +16,13 @@ function draw(size, maskable) {
   else { x.beginPath(); x.roundRect(0, 0, size, size, size * 0.23); x.fill(); }
   const s = maskable ? 0.72 : 1; // keep the mark inside the maskable safe zone
   x.translate(size / 2, size / 2); x.scale((size / 100) * s, (size / 100) * s); x.translate(-50, -50);
-  x.strokeStyle = '#fff'; x.lineWidth = 6.5; x.lineCap = 'round'; x.lineJoin = 'round';
-  x.beginPath(); x.moveTo(16, 54); x.lineTo(34, 54); x.lineTo(42, 32); x.lineTo(54, 72); x.lineTo(62, 46); x.lineTo(68, 54); x.lineTo(84, 54); x.stroke();
-  x.fillStyle = '#f0a59f'; x.beginPath(); x.arc(74, 28, 6, 0, Math.PI * 2); x.fill();
+  x.lineWidth = 8; x.lineCap = 'round'; x.lineJoin = 'round';
+  x.strokeStyle = '#fff'; x.beginPath(); x.moveTo(20, 70); x.lineTo(20, 30); x.lineTo(44, 70); x.lineTo(44, 30); x.stroke();
+  x.strokeStyle = '#f4b3ad'; x.beginPath(); x.moveTo(56, 30); x.lineTo(80, 30); x.lineTo(56, 70); x.lineTo(80, 70); x.stroke();
   return c.toBuffer('image/png');
 }
 fs.writeFileSync(`${out}/icon-192.png`, draw(192, false));
 fs.writeFileSync(`${out}/icon-512.png`, draw(512, false));
 fs.writeFileSync(`${out}/icon-maskable-512.png`, draw(512, true));
-fs.writeFileSync(`${out}/icon.svg`, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b6f72"/><stop offset="1" stop-color="#17203a"/></linearGradient></defs><rect width="100" height="100" rx="23" fill="url(#g)"/><path d="M16 54h18l8-22 12 40 8-26 6 8h16" fill="none" stroke="#fff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="74" cy="28" r="6" fill="#f0a59f"/></svg>`);
+fs.writeFileSync(`${out}/icon.svg`, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b6f72"/><stop offset="1" stop-color="#17203a"/></linearGradient></defs><rect width="100" height="100" rx="23" fill="url(#g)"/><g fill="none" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 70V30l24 40V30" stroke="#fff"/><path d="M56 30h24L56 70h24" stroke="#f4b3ad"/></g></svg>`);
 console.log('icons written');

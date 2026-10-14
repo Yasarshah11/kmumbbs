@@ -1,4 +1,4 @@
-# Medico Healer
+# NZ
 
 Offline-first study app for First Year MBBS (KMU), built from a private folder of course resources.
 

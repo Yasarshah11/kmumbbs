@@ -143,7 +143,7 @@ function parseChunk(chunk) {
   let o = opts.map((x) => squash(x));
   // OCR often reads the fifth letter as "c.", "@." or "¢," so option E ends up glued to D
   if (o.length === 4) {
-    const parts = o[3].split(/\s+[-_~."'*\\/(]*(?:@|©|[ceE]{1,2})\s?[.,)]\s+(?=\S)/);
+    const parts = o[3].split(/\s+[-_~."'*\\/(]*(?:(?:@|©|[ceE]{1,2})\s?[.,)]\s+|E\s?-\s?|E\s+(?=[A-Z]))(?=\S)/);
     if (parts.length === 2 && parts[0].length > 1 && parts[1].length > 1 && parts[1].length < 130) o = [o[0], o[1], o[2], parts[0], parts[1]];
   }
   o = o.map((x) => x.replace(/Scanned with CamScanner/gi, '').replace(/[\s.;,:'"`~_\-|=><*]+$/, '').replace(/^[\s:'"`~_\-|=*]+/, '').trim());
@@ -203,7 +203,15 @@ function parseSource(m) {
   if (file.includes(`${path.sep}ocr${path.sep}`)) for (const q of qs) { q.ans = -1; q.exp = ''; q.keyFrom = undefined; }
   for (const q of qs) {
     q.stem = q.stem.replace(/\s*Scanned (?:with|by) CamScanner\s*/gi, ' ').trim();
-    q.o = q.o.map((x) => x.replace(/\s+answe?r?\b.*$/i, '').trim());
+    // running headers and section titles that the page layout dropped into an option
+    q.o = q.o.map((x) => x.replace(/\s+answe?r?\b.*$/i, '').replace(/\s+(?:BLOCK [A-Z] [A-Z]{2,5} \d{4}.*|(?:\d\s*)?[Ss][Tt] YEAR MBBS.*|SUPER 6 .*|AMBASSADOR OF UR CLASS.*|WOMEN MEDICAL COLLEGE.*|(MCQ [^)]*unavailable)|(?:ANATOMY|HISTOLOGY|EMBRYOLOGY|BIO0?CHEMISTRY|PHYSIOLOGY(?: FOUNDATION)?|MINOR|BLOOD?))\s*$/, '').trim());
+    q.o = q.o.map((x) => x.replace(/\s*[-~.]*\s*(?:Page \d+\s*)?'?TEN DOCTORS? BY KMU.*$/i, '').replace(/\s+\((?:[A-E]|\d)\)?$/, '').trim());
+    // watermarks and answer ticks from downloaded question banks
+    q.o = q.o.map((x) => x.replace(/\s*\{?\[\]/g, '').replace(/\s*Livemcqs\.com/gi, '').replace(/\s*sh?ared by doctor of.*$/i, '').replace(/\s*This document is available free of charge.*$/i, '').trim());
+    q.stem = q.stem.replace(/^.*?Page: \d+'?\s*Difficulty: \d\s*©?\s*Ans: [A-E]\s+/, '').replace(/\s*sh?ared by doctor of.*$/i, '').replace(/\s*\[(?:AIIMS|AIMS|PGI|JIPMER)[^\]]*\]/g, '');
+    // Ten Doctor prints the key letter after the last option; it is not part of the option
+    if (m.label === 'tendoctor' && q.o.length === 5 && !/(?:vitamin|hepatitis|type|group|factor|protein|ig|hb|h[ae]+moglobin|coenzyme|phase|grade|class|zone|band|cyclin|apo|blood)\s+[A-E]$/i.test(q.o[4])) q.o[4] = q.o[4].replace(/\s+[A-E]$/, '');
+    q.stem = q.stem.replace(/\s*(?:Page \d+\s*)?'?TEN DOCTORS? BY KMU PAST EXAMS(?: IST YEAR)?/gi, '').replace(/\s*\bBLOCK [A-Z] [A-Z]{2,5} \d{3,4}\b/g, '').replace(/\s*\bST YEAR MBBS\b/g, '').replace(/\s{2,}/g, ' ').trim();
   }
   for (const q of qs) q.ref = `${m.name}#${q.section}.${q.n}`;
   return { qs, candidates: starts.length };
@@ -242,6 +250,8 @@ for (const q of bank.values()) {
   const id = crypto.createHash('md5').update(q.key).digest('hex').slice(0, 9);
   const ai = aiKeys[id];
   if (ai === 'X') continue;
+  // another option letter or question number inside an option means the scan ran questions together
+  if (q.o.some((x) => /\s[b-eB-E]\s?[.)]\s+\S/.test(x) || /\s\d{1,3}\s?[.,]\s?[A-Z][a-z]+\s\S+\s\S+/.test(x) || x.length > 170) || /PAPER CODE/.test(q.stem)) continue;
   if (q.ans < 0 && ai && 'ABCDE'.indexOf(ai) >= q.o.length) continue; // the keyed option was lost in OCR
   if (q.ans < 0 && ai && 'ABCDE'.indexOf(ai) >= 0 && 'ABCDE'.indexOf(ai) < q.o.length) { q.ans = 'ABCDE'.indexOf(ai); q.keyFrom = 'ai'; }
   out.push({

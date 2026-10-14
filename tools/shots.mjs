@@ -15,7 +15,7 @@ page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
 page.on('console', (m) => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
 page.on('dialog', (d) => d.accept());
 
-const base = 'http://localhost:4173/';
+const base = process.env.APP_URL || 'http://localhost:4173/';
 const shot = async (name, full = false) => { await new Promise((r) => setTimeout(r, 450)); await page.screenshot({ path: `${out}/${name}.png`, fullPage: full }); };
 const go = async (hash) => { await page.evaluate((h) => { location.hash = h; }, hash); await new Promise((r) => setTimeout(r, 250)); };
 const click = async (sel) => { await page.evaluate((s) => document.querySelector(s).click(), sel); await new Promise((r) => setTimeout(r, 250)); };

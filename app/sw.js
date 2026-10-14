@@ -1,6 +1,6 @@
 // Offline support: serve from cache first, refresh in the background.
 // VERSION is stamped by tools/build.mjs on every data build so phones pick up new content.
-const VERSION = '202610140000';
+const VERSION = '202610140008';
 const CACHE = `nmh-${VERSION}`;
 const SHELL = ['./', 'index.html', 'app.css', 'app.js', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'data/bundle.enc'];
 
